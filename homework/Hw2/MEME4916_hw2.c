@@ -22,9 +22,10 @@ static ssize_t device_write(struct file *, const char *, size_t, loff_t *);
 
 // Global variables are declared as static, so are global within the file.
 static int Major=216; // Major number assigned to our device driver
-static char myIDdata[BUF_LEN]="MEME4916\0";
+static char myIDdata[BUF_LEN]="MEME4916";
 static char* myID = myIDdata;
-static char Message[BUF_LEN];
+static char Message[BUF_LEN], *msg_Ptr;
+static int firstWriteFlag = true;
 //static char Message[BUF_LEN]; // The Message the device will give when asked
 static struct file_operations fops = {
     .read = device_read,
@@ -63,61 +64,86 @@ void cleanup_module(void)
 
 static int device_open(struct inode *inode, struct file *file)
 {
+    printk(KERN_ALERT"Opening\n");
+    myID = myIDdata;
+    msg_Ptr = Message;
+    firstWriteFlag = true;
     return SUCCESS;
 }
 
 static int device_release(struct inode *inode, struct file *file)
 {
+    printk(KERN_ALERT"Release\n");
     return SUCCESS;
 }
 
 static ssize_t device_read(struct file *filp, char *buffer, size_t length, loff_t *offset)
 {
     int bytes_read = 0;
-    int ReadDataLength = strlen(myID);
+    int DataLength = strlen(myID);
+    int StringReadLength = 0;
 
-    if(length < ReadDataLength)
+    printk(KERN_ALERT"Reading\n");
+
+    if(DataLength == 0)
     {
-        printk("Buffer is not enough.\n");
-        return(-ENOBUFS);
+        return SUCCESS;
     }
 
-    for(int i = 0; i < ReadDataLength; i++)
+    sprintf(Message, "%s\n", myID);
+    StringReadLength = strlen(msg_Ptr);
+    if(StringReadLength == 0)
     {
-        put_user(*(myID + i), buffer++);
+        return SUCCESS;
+    }
+    else if(length < StringReadLength)
+    {
+        StringReadLength = length;
+    }
+
+    for(int i = 0; i < StringReadLength; i++)
+    {
+        put_user(*(msg_Ptr++), buffer++);
         bytes_read++;
     }
-    printk(KERN_ALERT"I send %d bytes to you, the data is %s\n", bytes_read, myID);
-    return SUCCESS;
+    printk(KERN_ALERT"I send %d bytes to you\n", bytes_read, myIDdata);
+    return bytes_read;
 }
 
 static ssize_t device_write(struct file *filp, const char *buffer, size_t length, loff_t *off)
 {
     int bytes_write = 0;
+    int writeLength = BUF_LEN;
 
-    if(length <= 0)
+    printk(KERN_ALERT"Writing\n");
+
+    if(length == 0)
     {
         printk(KERN_ALERT"No Data in the write Data buffer\n");
-        return (-ENOBUFS);
+        return (SUCCESS);
     }
-    else if(BUF_LEN < length)
+    else if(BUF_LEN > length)
     {
-        printk(KERN_ALERT"Data is bigger than the buffer\n");
-        return(-ENOBUFS);
+        writeLength = length;
     }
 
-    memset(myID, NULL, BUF_LEN);
-
-    for(int i = 0; i < length; i++)
+    if(firstWriteFlag == true)
     {
-        get_user(*(myID + i), buffer++);
+        memset(myID, NULL, BUF_LEN);
+        firstWriteFlag = false;
+    }
+
+    for(int i = 0; i < writeLength; i++)
+    {
+        get_user(*(myID++), buffer++);
         bytes_write++;
-        if((i == (length - 1)) && (*(myID + i) < 0x20))
+        if((i == (writeLength - 1)) && (*(myID - 1) < 0x20))
         {
-            *(myID + i) = '\0';
+            printk(KERN_ALERT"NULL\n");
+            *(myID - 1) = '\0';
         }
     }
-    printk(KERN_ALERT"I get %d bytes from you, the data is %s\n", bytes_write, myID);
+    printk(KERN_ALERT"I get %d bytes from you, the data is %s\n", bytes_write, myIDdata);
     return bytes_write;
 }
 
