@@ -22,7 +22,9 @@ static ssize_t device_write(struct file *, const char *, size_t, loff_t *);
 
 // Global variables are declared as static, so are global within the file.
 static int Major=216; // Major number assigned to our device driver
-static char *myID="MEME4916";
+static char myIDdata[BUF_LEN]="MEME4916\0";
+static char* myID = myIDdata;
+static char Message[BUF_LEN];
 //static char Message[BUF_LEN]; // The Message the device will give when asked
 static struct file_operations fops = {
     .read = device_read,
@@ -33,20 +35,24 @@ static struct file_operations fops = {
 // Functions
 int init_module(void)
 {
-    Major = register_chrdev(Major, DEVICE_NAME, &fops);
-    printk(KERN_ALERT"YYYYy\n");
-    
-    if (Major < 0) 
+    int result = -1;
+    result = register_chrdev(Major, DEVICE_NAME, &fops);
+    if (result < 0) 
     {
-        printk("Registering the character device failed with %d\n", Major);
+        printk(KERN_ALERT"Registering the character device failed with %d\n", Major);
         return -1;
     }
-    printk("Registering Success,\n major number is %d \n device name is %s"
-        , Major, DEVICE_NAME);
-
-    printk(KERN_ALERT"%s\n", myID);
-    int x = strlen(myID);
-    printk(KERN_ALERT"%d\n", x);
+    else if(result == 0)
+    {
+        printk(KERN_ALERT"Registering Success,major number is %d, device name is %s\n"
+            , Major, DEVICE_NAME);
+    }
+    else
+    {
+        printk(KERN_ALERT"Registering Success, major number is %d, device name is %s\n"
+            , result, DEVICE_NAME);
+        Major = result;
+    }
     return SUCCESS;
 }
 
@@ -68,20 +74,11 @@ static int device_release(struct inode *inode, struct file *file)
 static ssize_t device_read(struct file *filp, char *buffer, size_t length, loff_t *offset)
 {
     int bytes_read = 0;
-    int ReadDataLength = 0;
-
-    for(int i = 0; i < BUF_LEN; i++)
-    {
-        if(*(myID + i) == NULL)
-        {
-            break;
-        }
-        ReadDataLength++;
-    }
+    int ReadDataLength = strlen(myID);
 
     if(length < ReadDataLength)
     {
-        printk("Buffer is not enough.");
+        printk("Buffer is not enough.\n");
         return(-ENOBUFS);
     }
 
@@ -90,8 +87,8 @@ static ssize_t device_read(struct file *filp, char *buffer, size_t length, loff_
         put_user(*(myID + i), buffer++);
         bytes_read++;
     }
-    printk("We send %d bytes to you", bytes_read);
-    return bytes_read;
+    printk(KERN_ALERT"I send %d bytes to you, the data is %s\n", bytes_read, myID);
+    return SUCCESS;
 }
 
 static ssize_t device_write(struct file *filp, const char *buffer, size_t length, loff_t *off)
@@ -100,30 +97,32 @@ static ssize_t device_write(struct file *filp, const char *buffer, size_t length
 
     if(length <= 0)
     {
-        printk("No Data in the write Data\n");
+        printk(KERN_ALERT"No Data in the write Data buffer\n");
         return (-ENOBUFS);
     }
+    else if(BUF_LEN < length)
+    {
+        printk(KERN_ALERT"Data is bigger than the buffer\n");
+        return(-ENOBUFS);
+    }
 
-    for(int i = 0; i < BUF_LEN; i++)
+    memset(myID, NULL, BUF_LEN);
+
+    for(int i = 0; i < length; i++)
     {
         get_user(*(myID + i), buffer++);
         bytes_write++;
-        if((i == (BUF_LEN - 1)) && (*buffer != NULL))
+        if((i == (length - 1)) && (*(myID + i) < 0x20))
         {
-            printk("buffer is overfull\n");
-            return(-ENOBUFS);
-        }
-        else if(*buffer == NULL)
-        {
-            break;
+            *(myID + i) = '\0';
         }
     }
-    printk("we get %d bytes from you", bytes_write);
-    return(bytes_write);
+    printk(KERN_ALERT"I get %d bytes from you, the data is %s\n", bytes_write, myID);
+    return bytes_write;
 }
 
 module_param(myID, charp, 444);
 MODULE_PARM_DESC(myID, "My ID in III\n ");
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("MEME4916");
-MODULE_DESCRIPTION("Character Driver: open, read, write, release!");
+MODULE_DESCRIPTION("Character Driver: open, read, write, release!\n");
