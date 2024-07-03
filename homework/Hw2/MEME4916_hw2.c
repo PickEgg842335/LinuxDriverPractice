@@ -65,6 +65,8 @@ void cleanup_module(void)
 static int device_open(struct inode *inode, struct file *file)
 {
     printk(KERN_ALERT"Opening\n");
+    memset(Message, 0, BUF_LEN);
+    sprintf(Message, "%s\n", myIDdata);
     myID = myIDdata;
     msg_Ptr = Message;
     firstWriteFlag = true;
@@ -80,17 +82,19 @@ static int device_release(struct inode *inode, struct file *file)
 static ssize_t device_read(struct file *filp, char *buffer, size_t length, loff_t *offset)
 {
     int bytes_read = 0;
-    int DataLength = strlen(myID);
+    int DataLength = strlen(msg_Ptr);
     int StringReadLength = 0;
 
     printk(KERN_ALERT"Reading\n");
 
     if(DataLength == 0)
     {
+        memset(Message, 0, BUF_LEN);
+        sprintf(Message, "%s\n", myIDdata);
+        msg_Ptr = Message;
         return SUCCESS;
     }
 
-    sprintf(Message, "%s\n", myID);
     StringReadLength = strlen(msg_Ptr);
     if(StringReadLength == 0)
     {
@@ -106,7 +110,7 @@ static ssize_t device_read(struct file *filp, char *buffer, size_t length, loff_
         put_user(*(msg_Ptr++), buffer++);
         bytes_read++;
     }
-    printk(KERN_ALERT"I send %d bytes to you\n", bytes_read, myIDdata);
+    printk(KERN_ALERT"I send %d bytes to you, the data is %s\n", bytes_read, myIDdata);
     return bytes_read;
 }
 
@@ -114,6 +118,7 @@ static ssize_t device_write(struct file *filp, const char *buffer, size_t length
 {
     int bytes_write = 0;
     int writeLength = BUF_LEN;
+    int resetwriteptrAtFinish = false;
 
     printk(KERN_ALERT"Writing\n");
 
@@ -125,11 +130,13 @@ static ssize_t device_write(struct file *filp, const char *buffer, size_t length
     else if(BUF_LEN > length)
     {
         writeLength = length;
+        resetwriteptrAtFinish = true;
     }
 
     if(firstWriteFlag == true)
     {
-        memset(myID, NULL, BUF_LEN);
+        printk(KERN_ALERT"NULL\n");
+        memset(myIDdata, 0, BUF_LEN);
         firstWriteFlag = false;
     }
 
@@ -139,10 +146,18 @@ static ssize_t device_write(struct file *filp, const char *buffer, size_t length
         bytes_write++;
         if((i == (writeLength - 1)) && (*(myID - 1) < 0x20))
         {
-            printk(KERN_ALERT"NULL\n");
             *(myID - 1) = '\0';
         }
     }
+
+    if(resetwriteptrAtFinish == true)
+    {
+        firstWriteFlag = true;
+        memset(Message, 0, BUF_LEN);
+        sprintf(Message, "%s\n", myIDdata);
+        myID = myIDdata;
+    }
+
     printk(KERN_ALERT"I get %d bytes from you, the data is %s\n", bytes_write, myIDdata);
     return bytes_write;
 }
