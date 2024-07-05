@@ -1,0 +1,5 @@
+
+KERNEL=="sdb*", PROGRAM="/bin/mount -t vfat /dev/sdb1 /mnt"
+
+#KERNEL=="sdb*", ACTION=="add", PROGRAM="/bin/mount -t vfat /dev/sdb1 /mnt"
+#KERNEL=="sdb*", ACTION=="remove", PROGRAM="/bin/umount /mnt"

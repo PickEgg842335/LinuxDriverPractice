@@ -1,0 +1,31 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+BUF_LEN	chardev_ioctl.c	9;"	d	file:
+CC	test/Makefile	/^CC = gcc$/;"	m
+CFLAGS	test/Makefile	/^CFLAGS = -g -O2 -Wall$/;"	m
+CHARDEV_H	chardev.h	2;"	d
+DEVICE_FILE_NAME	chardev.h	9;"	d
+DEVICE_NAME	chardev_ioctl.c	8;"	d	file:
+INCLUDE_VERMAGIC	chardev_ioctl.mod.c	2;"	d	file:
+IOCTL_GET_MSG	chardev.h	7;"	d
+IOCTL_GET_NTH_BYTE	chardev.h	8;"	d
+IOCTL_SET_MSG	chardev.h	6;"	d
+MAJOR_NUM	chardev.h	5;"	d
+Message	chardev_ioctl.c	/^static char Message[BUF_LEN]="The string is from kernel module!\\n";$/;"	v	file:
+Message_Ptr	chardev_ioctl.c	/^static char *Message_Ptr=Message;$/;"	v	file:
+TARGET	test/Makefile	/^TARGET=test$/;"	m
+cleanup_module	chardev_ioctl.c	/^void cleanup_module(void) $/;"	f
+device_ioctl	chardev_ioctl.c	/^long device_ioctl(struct file *file,unsigned int ioctl_num, unsigned long ioctl_param)$/;"	f
+device_open	chardev_ioctl.c	/^static int device_open(struct inode *inode, struct file *file)$/;"	f	file:
+device_read	chardev_ioctl.c	/^static ssize_t device_read(struct file *filp, char *buffer, size_t length, loff_t *offset)$/;"	f	file:
+device_release	chardev_ioctl.c	/^static int device_release(struct inode *inode, struct file *file)$/;"	f	file:
+device_write	chardev_ioctl.c	/^static ssize_t device_write(struct file *filp,const char *buffer, size_t length, loff_t *off)$/;"	f	file:
+fops	chardev_ioctl.c	/^static struct file_operations fops={$/;"	v	typeref:struct:file_operations	file:
+init_module	chardev_ioctl.c	/^int init_module(void)$/;"	f
+main	test/test.c	/^int main(int argc, char *argv[])$/;"	f
+major	chardev_ioctl.c	/^static int major=0;$/;"	v	file:
+mycdev	chardev_ioctl.c	/^static struct cdev mycdev;$/;"	v	typeref:struct:cdev	file:

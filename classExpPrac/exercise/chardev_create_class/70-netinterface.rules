@@ -1,0 +1,2 @@
+
+KERNEL=="eth*", ATTR{address}=="00:0c:29:f2:db:d9", NAME="lan"

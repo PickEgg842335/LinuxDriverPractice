@@ -1,0 +1,1 @@
+cmd_/root/exercise/chardev_nonblock_Prac/nonblock.mod := printf '%s\n'   nonblock.o | awk '!x[$$0]++ { print("/root/exercise/chardev_nonblock_Prac/"$$0) }' > /root/exercise/chardev_nonblock_Prac/nonblock.mod

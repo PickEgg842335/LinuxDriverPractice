@@ -1,0 +1,1 @@
+cmd_/root/exercise/chardev_Practice2/chardev.ko := ld -r -m elf_x86_64 -z noexecstack --no-warn-rwx-segments --build-id=sha1  -T arch/x86/module.lds -o /root/exercise/chardev_Practice2/chardev.ko /root/exercise/chardev_Practice2/chardev.o /root/exercise/chardev_Practice2/chardev.mod.o;  true

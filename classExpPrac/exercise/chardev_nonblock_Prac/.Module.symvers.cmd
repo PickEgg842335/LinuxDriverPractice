@@ -1,0 +1,1 @@
+cmd_/root/exercise/chardev_nonblock_Prac/Module.symvers :=  sed 's/ko$$/o/'  /root/exercise/chardev_nonblock_Prac/modules.order | scripts/mod/modpost -m      -o /root/exercise/chardev_nonblock_Prac/Module.symvers -e -i Module.symvers -T - 

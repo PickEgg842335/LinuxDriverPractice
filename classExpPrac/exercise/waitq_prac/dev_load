@@ -1,0 +1,21 @@
+#!/bin/sh
+
+module="waitq.ko"
+device="waitq"
+group="root"
+mode="664"
+
+# invoke insmod with all arguments we got
+/sbin/insmod -f $module || exit 1
+
+major=`cat /proc/devices | awk "\\$2==\"$device\" {print \\$1}"`
+
+echo "Major number = $major"
+
+rm -f /dev/${device}
+mknod /dev/${device} c $major 0
+
+chgrp $group /dev/${device}
+chmod $mode  /dev/${device}
+
+

@@ -1,0 +1,1 @@
+cmd_/root/exercise/waitq_prac/Module.symvers :=  sed 's/ko$$/o/'  /root/exercise/waitq_prac/modules.order | scripts/mod/modpost -m      -o /root/exercise/waitq_prac/Module.symvers -e -i Module.symvers -T - 

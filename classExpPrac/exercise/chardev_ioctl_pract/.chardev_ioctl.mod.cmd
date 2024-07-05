@@ -1,0 +1,1 @@
+cmd_/root/exercise/chardev_ioctl_pract/chardev_ioctl.mod := printf '%s\n'   chardev_ioctl.o | awk '!x[$$0]++ { print("/root/exercise/chardev_ioctl_pract/"$$0) }' > /root/exercise/chardev_ioctl_pract/chardev_ioctl.mod
