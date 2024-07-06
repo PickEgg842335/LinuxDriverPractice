@@ -1,0 +1,1 @@
+cmd_/root/exercise/uart_interrupt_Pract/Module.symvers :=  sed 's/ko$$/o/'  /root/exercise/uart_interrupt_Pract/modules.order | scripts/mod/modpost -m      -o /root/exercise/uart_interrupt_Pract/Module.symvers -e -i Module.symvers -T - 
