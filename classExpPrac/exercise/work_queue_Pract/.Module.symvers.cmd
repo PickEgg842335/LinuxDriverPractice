@@ -1,0 +1,1 @@
+cmd_/root/exercise/work_queue_Pract/Module.symvers :=  sed 's/ko$$/o/'  /root/exercise/work_queue_Pract/modules.order | scripts/mod/modpost -m      -o /root/exercise/work_queue_Pract/Module.symvers -e -i Module.symvers -T - 

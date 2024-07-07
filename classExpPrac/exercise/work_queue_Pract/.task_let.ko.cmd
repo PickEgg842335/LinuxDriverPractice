@@ -1,0 +1,1 @@
+cmd_/root/exercise/work_queue_Pract/task_let.ko := ld -r -m elf_x86_64 -z noexecstack --no-warn-rwx-segments --build-id=sha1  -T arch/x86/module.lds -o /root/exercise/work_queue_Pract/task_let.ko /root/exercise/work_queue_Pract/task_let.o /root/exercise/work_queue_Pract/task_let.mod.o;  true
